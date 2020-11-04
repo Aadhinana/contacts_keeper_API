@@ -11,8 +11,33 @@ const User = require("../../models/user");
 Gets the logged in user details 
 protected 
 */
-router.get("/", (req, res) => {
-  console.log("Get the logged in user");
+router.get("/", async (req, res) => {
+  // look for token in the header
+  const token = req.headers["authorization"].split(" ")[1];
+  try {
+    if (token) {
+      const decoded = await jwt.verify(token, process.env.SECRET);
+      const userId = decoded.id;
+
+      User.findOne({ _id: userId })
+        .select({ password: 0 })
+        .then((user) => {
+          console.log(user);
+          return res.json(user);
+        })
+        .catch((err) => {
+          console.log(err);
+          return res.status(500).json({ message: "Server Error" });
+        });
+    } else {
+      return res
+        .status(401)
+        .json({ message: "No token. Authorization failed" });
+    }
+  } catch (err) {
+    console.log(err);
+    return res.status(401).json({ message: "Invalid Token" });
+  }
 });
 
 /* 
