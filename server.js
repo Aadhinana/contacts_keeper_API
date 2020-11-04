@@ -6,6 +6,9 @@ const app = express();
 
 const PORT = process.env.PORT | 3000;
 
+// to parse JSON body
+app.use(express.json({}));
+
 // Set up routes
 app.use("/auth", require("./routes/auth"));
 app.use("/contacts", require("./routes/contacts"));
@@ -21,6 +24,7 @@ mongoose
   .connect(process.env.DB_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
+    useCreateIndex: true,
   })
   .then((db) => {
     // connected to DB. start listening to app.
