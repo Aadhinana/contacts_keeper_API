@@ -6,38 +6,24 @@ const jwt = require("jsonwebtoken");
 const { compare } = require("bcryptjs");
 const User = require("../../models/user");
 
+const authMiddleware = require("../../middleware/authentication");
+
 /* 
 / GET 
 Gets the logged in user details 
 protected 
 */
-router.get("/", async (req, res) => {
-  // look for token in the header
-  const token = req.headers["authorization"].split(" ")[1];
-  try {
-    if (token) {
-      const decoded = await jwt.verify(token, process.env.SECRET);
-      const userId = decoded.id;
-
-      User.findOne({ _id: userId })
-        .select({ password: 0 })
-        .then((user) => {
-          console.log(user);
-          return res.json(user);
-        })
-        .catch((err) => {
-          console.log(err);
-          return res.status(500).json({ message: "Server Error" });
-        });
-    } else {
-      return res
-        .status(401)
-        .json({ message: "No token. Authorization failed" });
-    }
-  } catch (err) {
-    console.log(err);
-    return res.status(401).json({ message: "Invalid Token" });
-  }
+router.get("/", authMiddleware, async (req, res) => {
+  // authenticated. req.user will have the user id.
+  User.findOne({ _id: req.user })
+    .select({ password: 0 })
+    .then((user) => {
+      return res.status(200).json(user);
+    })
+    .catch((err) => {
+      console.log(err);
+      return res.status(500).json({ message: "Server Error" });
+    });
 });
 
 /* 

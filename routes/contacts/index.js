@@ -1,4 +1,6 @@
 const express = require("express");
+const authentication = require("../../middleware/authentication");
+const authMiddleware = require("../../middleware/authentication");
 
 const router = express.Router();
 
@@ -7,7 +9,7 @@ const router = express.Router();
 Gets the contacts for the logged in user
 protected 
 */
-router.get("/", (req, res) => {
+router.get("/", authMiddleware, (req, res) => {
   console.log("Gets contacts for the user");
 });
 
@@ -16,7 +18,7 @@ router.get("/", (req, res) => {
 Adds a contact for the logged in user
 protected
 */
-router.post("/", (req, res) => {
+router.post("/", authMiddleware, (req, res) => {
   console.log("Adds a contact for the user");
 });
 
@@ -25,7 +27,7 @@ router.post("/", (req, res) => {
 update a contact with the user ID
 protected
 */
-router.put("/:id", (req, res) => {
+router.put("/:id", authMiddleware, (req, res) => {
   console.log("Updates a contact");
 });
 
@@ -34,7 +36,7 @@ router.put("/:id", (req, res) => {
 delete a contact with the user ID
 protected
 */
-router.delete("/:id", (req, res) => {
+router.delete("/:id", authMiddleware, (req, res) => {
   console.log("deletes a contact");
 });
 
